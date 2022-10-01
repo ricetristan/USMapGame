@@ -1,0 +1,41 @@
+body{
+    background-image:url(../img/tiles.png);
+}
+h1{
+    color:red;
+    text-shadow: 1px 1px 2px #000;
+}
+#wrapper{
+    text-align:center;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+#us{
+    color:blue;
+}
+#canvas{
+    position:absolute;
+    top: 275px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity:0.75;
+}
+#map{
+    /*text-align:center;*/
+}
+#statePick{
+    display:none;
+}
+.button{
+    display:inline-block;
+    margin-left: 1em;
+    margin-right: 1em;
+}
+.button button{
+    cursor:pointer;
+}
+.button label{
+    display:block;
+    font-size: 0.7em;
+}
+.button1{background-color:green;}
+.button2{background-color:red;}

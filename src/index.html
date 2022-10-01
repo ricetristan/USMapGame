@@ -1,17 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
-  <title>Vanilla JavaScript App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <title>United States Game</title>
+  <link rel="stylesheet" href="css/game.css">
 </head>
-
 <body>
-  <main>
-    <h1>Vanilla JavaScript App</h1>
-  </main>
-</body>
+    <div id="wrapper">
+      <h1><span id="us">United States:</span> New Territories</h1>
+      <canvas id="canvas" width='400' height='300' data-responsiveMinWidth="180"
+      data-responsiveScaleHeight="true" data-responsiveMargin="50" onClick="startSpin();"></canvas>
 
+      <div id="map"></div>
+      <span id="statePick"></span>
+
+      <div class="button">
+        <button class="button1" onclick="showSpinner()">
+          <img src="img/pin.svg" />
+        </button>
+        <label>Pick State</label>
+      </div>
+      <div class="button">
+        <button class="button2" onclick="showSpinner(getCurrentStatePick())">
+          <img src="img/out.svg" />
+        </button>
+        <label>Pick Neighbor</label>
+      </div>
+      <div class="button">
+        <button onclick="resetMap()">
+          <img src="img/reset.svg" />
+        </button>
+        <label>Reset</label>
+      </div>
+    </div>
+    <script src="js/raphael-min.js"></script>
+    <script src="js/us-map-svg.js"></script>
+    <script src="js/winwheel.min.js"></script>
+    <script src="js/tweenmax.min.js"></script>
+    <script src="js/game.js"></script>
+</body>
 </html>
