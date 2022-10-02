@@ -18,6 +18,7 @@ h1{
     left: 50%;
     transform: translate(-50%, -50%);
     opacity:0.75;
+    pointer-events: none;
 }
 #map{
     /*text-align:center;*/

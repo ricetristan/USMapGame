@@ -53,13 +53,14 @@ window.onload = function () {
     for(let i=0; i<statePaths.length; i++){ statePaths[i].addEventListener('click', function(evt){ 
       if(evt && evt.target){
         let stateName = evt.target.id;
-        if(stateName){ pickState(stateName.toLowerCase()); }
+        if(stateName && getStateOwner(stateName) == stateName){ pickState(stateName.toLowerCase()); }
       }
      }, false); }
      let stateNames = document.querySelectorAll('text');
      for(let i=0; i<stateNames.length; i++){ stateNames[i].addEventListener('click', function(evt){ 
       if(evt && evt.target){
-        pickState(evt.target.textContent.toLowerCase());
+        let stateName = evt.target.textContent.toLowerCase();
+        if(stateName && getStateOwner(stateName) == stateName){ pickState(stateName); }
       }
      }, false); }
      
@@ -76,28 +77,33 @@ function hideSpinner(){
 }
 
 function showSpinner(state){
+
+  if(document.getElementById('canvas').style.display == '') return; // Already spinning
+
   // Hide spinner
   hideSpinner();
 
   // Setup the wheel
   let segments = getWheelSegments(state);
-  theWheel = new Winwheel({
-     'responsive'   : true,
-     'numSegments'    : segments.length,
-     'segments'       : segments,
-     'animation' :
-     {
-         'type'     : 'spinToStop',
-         'duration' : 2,
-         'spins'    : 4,
-         'callbackFinished' : "spinComplete(" + (state ? "'" + state + "'" : "") + ")",
-         'callbackAfter' : 'drawTriangle()'
-     }
-  });
+  if(segments && segments.length > 0){
+    theWheel = new Winwheel({
+      'responsive'   : true,
+      'numSegments'    : segments.length,
+      'segments'       : segments,
+      'animation' :
+      {
+          'type'     : 'spinToStop',
+          'duration' : 2,
+          'spins'    : 4,
+          'callbackFinished' : "spinComplete(" + (state ? "'" + state + "'" : "") + ")",
+          'callbackAfter' : 'drawTriangle()'
+      }
+    });
 
-  // Show spinner and spin it
-  document.getElementById('canvas').style.display = '';
-  startSpin();
+    // Show spinner and spin it
+    document.getElementById('canvas').style.display = '';
+    startSpin();
+  }
 }
 
 function getWheelSegments(state){
@@ -105,13 +111,13 @@ function getWheelSegments(state){
   if(state){
     let neighbors = getStateNeighbors(state);
     for(let i=0; i<neighbors.length; i++){
-      segments.push({'fillStyle': usRaphael[neighbors[i]].color, 'text': neighbors[i]});
+      segments.push({'fillStyle': usRaphael[neighbors[i]].color, 'text': neighbors[i].toUpperCase()});
     }
   }else{
     let states = Object.keys(stateNeighbors);
     for(let i=0; i<states.length; i++){
       if(getStateOwner(states[i]) == states[i]){
-        segments.push({'fillStyle': usRaphael[states[i]].color, 'text': states[i]});
+        segments.push({'fillStyle': usRaphael[states[i]].color, 'text': states[i].toUpperCase()});
       }
     }
   }
@@ -141,10 +147,10 @@ function drawTriangle()
     ctx.fillStyle   = 'gray';     // Set fill colour.
     ctx.lineWidth   = 2;
     ctx.beginPath();              // Begin path.
-    ctx.moveTo(170, 5);           // Move to initial position.
-    ctx.lineTo(230, 5);           // Draw lines to make the shape.
-    ctx.lineTo(200, 40);
-    ctx.lineTo(171, 5);
+    ctx.moveTo(240, 1);           // Move to initial position.
+    ctx.lineTo(260, 1);           // Draw lines to make the shape.
+    ctx.lineTo(250, 40);
+    ctx.lineTo(241, 1);
     ctx.stroke();                 // Complete the path by stroking (draw lines).
     ctx.fill();                   // Then fill.
 }
@@ -152,20 +158,22 @@ function spinComplete(state)
 {
     let selectedState = theWheel.getIndicatedSegment();
     if(state){
-      combine(getCurrentStatePick(), selectedState.text);
+      combine(getCurrentStatePick(), selectedState.text.toLowerCase());
     }else{
-      pickState(selectedState.text);
+      pickState(selectedState.text.toLowerCase());
     }
-    setTimeout(hideSpinner, 1000);
+    setTimeout(hideSpinner, 1500);
 }
 
 function showState(state){
-    let stateElem = usRaphael[state];
+  if(state){
+    let stateElem = usRaphael[state.toLowerCase()];
     if(stateElem){
-        stateElem.animate({fill: stateElem.color}, 500);
+        stateElem.animate({fill: stateElem.color}, 3000);
         //stateElem.toFront();
         R.safari();
     }
+  }
 }
 
 /*function showNeighbor(state, dir){
@@ -247,7 +255,7 @@ function combine(state, neighbor){
   let neighborOwner = getStateOwner(neighbor);
   
   if(!combinedStates[state]){ combinedStates[state] = []; }
-  else if(combinedStates[state].length >= 49){ gameOver(); return; }
+  else if(combinedStates[state].length > 49){ return; }
 
   // If neighbor is already owned, recurse!
   if(state == neighborOwner){ pickNeighbor(neighbor); }
@@ -265,8 +273,10 @@ function combine(state, neighbor){
     combinedStates[state].push(neighbor);
   }
 
+
   // Finally, color all owned states the same, and clear any owned state labels
   let stateElem = usRaphael[state];
+  stateElem.animate({stroke: stateElem.color}, 500);
   for(let i=0; i< combinedStates[state].length; i++){
     let ownedState = combinedStates[state][i];
     let neighborElem = usRaphael[ownedState];
@@ -280,9 +290,11 @@ function combine(state, neighbor){
       usRaphael[ownedState + '_name'].remove();
     }
   }
+
+  if(combinedStates[state].length > 49){ gameOver(); }
 }
 
 
 function gameOver(){
-  alert('GAME OVER!');
+  alert('GAME OVER! ' + getCurrentStatePick().toUpperCase() + ' WINS!');
 }
